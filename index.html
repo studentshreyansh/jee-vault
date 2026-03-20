@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JEE Vault — IIT JEE Question Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --phy: #00f0ff;
+    --phy2: #0080ff;
+    --chem: #ff6b00;
+    --chem2: #ff0080;
+    --math: #39ff14;
+    --math2: #00c896;
+    --bg: #050510;
+    --card-bg: rgba(255,255,255,0.04);
+    --card-border: rgba(255,255,255,0.09);
+    --text: #f0f0ff;
+    --muted: rgba(240,240,255,0.45);
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── Animated BG ─── */
+  .bg-canvas {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(0,240,255,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 60% at 80% 80%, rgba(255,0,128,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 40% at 60% 10%, rgba(57,255,20,0.05) 0%, transparent 55%),
+                #050510;
+  }
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* ─── Wrapper ─── */
+  .wrapper { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+  /* ─── NAV ─── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(20px);
+    background: rgba(5,5,16,0.75);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 16px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem; font-weight: 800;
+    background: linear-gradient(90deg, var(--phy), var(--chem2), var(--math));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+  }
+  .nav-pill {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 0.78rem; font-weight: 500; color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    text-align: center;
+    padding: 100px 24px 60px;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(0,240,255,0.1);
+    border: 1px solid rgba(0,240,255,0.25);
+    color: var(--phy);
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 2px;
+    padding: 6px 18px; border-radius: 100px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s ease forwards;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 800; line-height: 1.05;
+    letter-spacing: -2px;
+    animation: fadeUp 0.7s 0.1s ease both;
+  }
+  .hero h1 span {
+    display: block;
+    background: linear-gradient(135deg, var(--phy), var(--chem2) 50%, var(--math));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    margin-top: 20px;
+    font-size: 1.1rem; color: var(--muted); line-height: 1.7;
+    max-width: 480px; margin-left: auto; margin-right: auto;
+    animation: fadeUp 0.7s 0.2s ease both;
+  }
+  .hero-stats {
+    display: flex; gap: 40px; justify-content: center;
+    margin-top: 48px;
+    animation: fadeUp 0.7s 0.35s ease both;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem; font-weight: 800;
+    background: linear-gradient(135deg, var(--phy), var(--math));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 2px; letter-spacing: 0.5px; }
+
+  /* ─── SUBJECT TABS ─── */
+  .subject-tabs {
+    display: flex; gap: 12px; justify-content: center;
+    margin: 60px 0 40px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem; font-weight: 700;
+    padding: 12px 30px; border-radius: 100px;
+    border: 2px solid transparent;
+    cursor: pointer; transition: all 0.25s;
+    background: var(--card-bg);
+    color: var(--muted);
+    letter-spacing: 0.3px;
+  }
+  .tab-btn:hover { color: var(--text); transform: translateY(-2px); }
+  .tab-btn.active { color: #000; }
+  .tab-btn.phy.active  { background: linear-gradient(135deg, var(--phy), var(--phy2)); border-color: transparent; box-shadow: 0 0 30px rgba(0,240,255,0.4); }
+  .tab-btn.chem.active { background: linear-gradient(135deg, var(--chem), var(--chem2)); border-color: transparent; box-shadow: 0 0 30px rgba(255,107,0,0.4); }
+  .tab-btn.math.active { background: linear-gradient(135deg, var(--math), var(--math2)); border-color: transparent; box-shadow: 0 0 30px rgba(57,255,20,0.4); color:#000; }
+
+  .tab-btn.phy  { border-color: rgba(0,240,255,0.25); }
+  .tab-btn.chem { border-color: rgba(255,107,0,0.25); }
+  .tab-btn.math { border-color: rgba(57,255,20,0.25); }
+
+  /* ─── CHAPTER GRID ─── */
+  .chapter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px; margin-bottom: 50px;
+  }
+  .chapter-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 22px 24px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative; overflow: hidden;
+    animation: fadeUp 0.5s ease both;
+  }
+  .chapter-card::before {
+    content:''; position:absolute; inset:0;
+    opacity: 0; transition: opacity 0.25s;
+    border-radius: 20px;
+  }
+  .chapter-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.2); }
+  .chapter-card:hover::before { opacity: 1; }
+
+  .phy-card::before  { background: linear-gradient(135deg, rgba(0,240,255,0.08), rgba(0,128,255,0.05)); }
+  .chem-card::before { background: linear-gradient(135deg, rgba(255,107,0,0.08), rgba(255,0,128,0.05)); }
+  .math-card::before { background: linear-gradient(135deg, rgba(57,255,20,0.07), rgba(0,200,150,0.05)); }
+
+  .chapter-card:hover.phy-card  { box-shadow: 0 8px 40px rgba(0,240,255,0.15); border-color: rgba(0,240,255,0.3); }
+  .chapter-card:hover.chem-card { box-shadow: 0 8px 40px rgba(255,107,0,0.15); border-color: rgba(255,107,0,0.3); }
+  .chapter-card:hover.math-card { box-shadow: 0 8px 40px rgba(57,255,20,0.12); border-color: rgba(57,255,20,0.3); }
+
+  .ch-icon {
+    width: 44px; height: 44px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 14px;
+    position: relative; z-index: 1;
+  }
+  .phy-card  .ch-icon { background: rgba(0,240,255,0.12); }
+  .chem-card .ch-icon { background: rgba(255,107,0,0.12); }
+  .math-card .ch-icon { background: rgba(57,255,20,0.12); }
+
+  .ch-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem; font-weight: 700; margin-bottom: 6px;
+    position: relative; z-index: 1;
+  }
+  .ch-count {
+    font-size: 0.78rem; color: var(--muted);
+    position: relative; z-index: 1;
+  }
+  .ch-badge {
+    position: absolute; top: 18px; right: 18px;
+    font-size: 0.65rem; font-weight: 600;
+    padding: 3px 10px; border-radius: 100px;
+    letter-spacing: 0.5px;
+    position: absolute; z-index: 1;
+  }
+  .phy-card  .ch-badge { background: rgba(0,240,255,0.15); color: var(--phy); }
+  .chem-card .ch-badge { background: rgba(255,107,0,0.15); color: var(--chem); }
+  .math-card .ch-badge { background: rgba(57,255,20,0.15); color: var(--math); }
+
+  /* ─── QUESTION PANEL ─── */
+  .q-panel {
+    display: none;
+    animation: slideIn 0.35s ease;
+  }
+  .q-panel.active { display: block; }
+
+  .q-header {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 28px;
+  }
+  .back-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text);
+    padding: 9px 18px; border-radius: 100px;
+    font-size: 0.85rem; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.1); }
+
+  .q-chapter-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem; font-weight: 800;
+  }
+
+  .q-list { display: flex; flex-direction: column; gap: 16px; }
+
+  .q-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    padding: 24px 28px;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+  }
+  .q-card:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); }
+  .q-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 1.5px; color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .q-text {
+    font-size: 1rem; line-height: 1.7;
+    color: var(--text);
+  }
+  .q-tags {
+    display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;
+  }
+  .q-tag {
+    font-size: 0.7rem; font-weight: 500;
+    padding: 4px 12px; border-radius: 100px;
+  }
+  .tag-hard { background: rgba(255,50,50,0.12); color: #ff6464; }
+  .tag-med  { background: rgba(255,200,0,0.12); color: #ffd700; }
+  .tag-easy { background: rgba(57,255,20,0.12); color: var(--math); }
+  .tag-jee  { background: rgba(168,85,247,0.15); color: #c084fc; }
+  .tag-imp  { background: rgba(0,240,255,0.12); color: var(--phy); }
+
+  /* options reveal */
+  .q-options { display: none; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.07); }
+  .q-options.show { display: block; }
+  .option {
+    padding: 10px 14px; border-radius: 10px;
+    margin-bottom: 8px; font-size: 0.9rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .option:hover { background: rgba(255,255,255,0.07); }
+  .option.correct { background: rgba(57,255,20,0.1); border-color: rgba(57,255,20,0.3); color: var(--math); }
+  .option.wrong   { background: rgba(255,50,50,0.1); border-color: rgba(255,50,50,0.3); color: #ff6464; }
+  .opt-label { font-weight: 700; font-size: 0.78rem; opacity:0.6; min-width:16px; }
+
+  /* ─── SECTION LABEL ─── */
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 2.5px; color: var(--muted);
+    margin-bottom: 20px; margin-top: 8px;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    text-align: center;
+    padding: 50px 24px 30px;
+    font-size: 0.8rem; color: var(--muted);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    margin-top: 40px;
+  }
+
+  /* ─── KEYFRAMES ─── */
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(20px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+  @keyframes slideIn {
+    from { opacity:0; transform: translateX(20px); }
+    to   { opacity:1; transform: translateX(0); }
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+  /* ─── Empty state ─── */
+  .empty { text-align: center; padding: 60px 0; color: var(--muted); }
+  .empty-icon { font-size: 3rem; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<div class="bg-canvas"></div>
+<div class="bg-grid"></div>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">⚡ JEE Vault</span>
+  <span class="nav-pill">IIT JEE · PCM</span>
+</nav>
+
+<!-- MAIN -->
+<div class="wrapper">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag">📚 IIT JEE QUESTION BANK</div>
+    <h1>Crack JEE with <span>Precision.</span></h1>
+    <p>Chapter-wise curated questions for Physics, Chemistry & Mathematics — Class 11, IIT JEE level.</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num" id="totalQ">—</div>
+        <div class="stat-label">QUESTIONS</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">3</div>
+        <div class="stat-label">SUBJECTS</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="totalChapters">—</div>
+        <div class="stat-label">CHAPTERS</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUBJECT TABS -->
+  <div class="subject-tabs">
+    <button class="tab-btn phy active" onclick="switchSubject('phy', this)">⚡ Physics</button>
+    <button class="tab-btn chem" onclick="switchSubject('chem', this)">🧪 Chemistry</button>
+    <button class="tab-btn math" onclick="switchSubject('math', this)">∑ Mathematics</button>
+  </div>
+
+  <!-- CHAPTER VIEW -->
+  <div id="chapter-view">
+    <div class="section-label">BROWSE BY CHAPTER</div>
+    <div class="chapter-grid" id="chapter-grid"></div>
+  </div>
+
+  <!-- QUESTION VIEW -->
+  <div class="q-panel" id="q-panel">
+    <div class="q-header">
+      <button class="back-btn" onclick="goBack()">← Back</button>
+      <div class="q-chapter-title" id="q-chapter-title"></div>
+    </div>
+    <div class="q-list" id="q-list"></div>
+  </div>
+
+</div>
+
+<footer>
+  Built for JEE Warriors · Add your own questions from NCERT, HC Verma & Previous Year Papers
+</footer>
+
+<script>
+// ============================================================
+//  ✏️  YOUR QUESTION BANK — EDIT THIS SECTION ONLY
+//
+//  HOW TO ADD A QUESTION inside any chapter's questions: [ ]
+//  Copy this block and fill in your values:
+//
+//  { text: "Your question here?",
+//    opts: ["Option A", "Option B", "Option C", "Option D"],
+//    ans: 0,           ← correct option index: 0=A  1=B  2=C  3=D
+//    diff: "easy",     ← difficulty: "easy"  "med"  "hard"
+//    tags: ["JEE PYQ"] ← any of: "JEE PYQ" "JEE" "NCERT" "Important"
+//  },
+//
+//  HOW TO ADD A NEW CHAPTER inside any subject's chapters: [ ]
+//  Copy this block:
+//
+//  {
+//    name: "Chapter Name",
+//    icon: "📖",        ← any emoji
+//    questions: [
+//      { text: "Q1?", opts:["A","B","C","D"], ans:0, diff:"med", tags:["JEE"] },
+//    ]
+//  },
+//
+//  REMEMBER: Every line inside questions: [ ] must end with a comma ","
+//            except the very last one before the closing ]
+// ============================================================
+
+const DATA = {
+
+  // ──────────────────────────────────────────
+  //  ⚡ PHYSICS  — add chapters/questions here
+  // ──────────────────────────────────────────
+  phy: {
+    color: 'phy',
+    chapters: [
+      {
+        name: "Units & Measurements",
+        icon: "📏",
+        questions: [
+          // ✏️ ADD YOUR PHYSICS - UNITS & MEASUREMENTS QUESTIONS BELOW
+          // { text: "Your question?", opts:["A","B","C","D"], ans:0, diff:"easy", tags:["NCERT"] },
+        ]
+      },
+      {
+        name: "Kinematics",
+        icon: "🚀",
+        questions: [
+          // ✏️ ADD YOUR PHYSICS - KINEMATICS QUESTIONS BELOW
+        ]
+      },
+      {
+        name: "Laws of Motion",
+        icon: "⚙️",
+        questions: [
+          // ✏️ ADD YOUR PHYSICS - LAWS OF MOTION QUESTIONS BELOW
+        ]
+      },
+      {
+        name: "Work, Energy & Power",
+        icon: "⚡",
+        questions: [
+          // ✏️ ADD YOUR PHYSICS - WORK ENERGY POWER QUESTIONS BELOW
+        ]
+      },
+      {
+        name: "Gravitation",
+        icon: "🌍",
+        questions: [
+          // ✏️ ADD YOUR PHYSICS - GRAVITATION QUESTIONS BELOW
+        ]
+      },
+      {
+        name: "Thermodynamics",
+        icon: "🌡️",
+        questions: [
+          // ✏️ ADD YOUR PHYSICS - THERMODYNAMICS QUESTIONS BELOW
+        ]
+      },
+      // ✏️ ADD A NEW PHYSICS CHAPTER BELOW THIS LINE (copy format above)
+    ]
+  },
+
+  // ──────────────────────────────────────────
+  //  🧪 CHEMISTRY — add chapters/questions here
+  // ──────────────────────────────────────────
+  chem: {
+    color: 'chem',
+    chapters: [
+      {
+        name: "Atomic Structure",
+        icon: "⚛️",
+        questions: [
+          // ✏️ ADD YOUR CHEMISTRY - ATOMIC STRUCTURE QUESTIONS BELOW
+        ]
+      },
+      {
+        name: "Chemical Bonding",
+        icon: "🔗",
+        questions: [
+          // ✏️ ADD YOUR CHEMISTRY - CHEMICAL BONDING QUESTIONS BELOW
+        ]
+      },
+      {
+        name: "States of Matter",
+        icon: "💧",
+        questions: [
+          // ✏️ ADD YOUR CHEMISTRY - STATES OF MATTER QUESTIONS BELOW
+        ]
+      },
+      {
+        name: "Thermochemistry",
+        icon: "🔥",
+        questions: [
+          // ✏️ ADD YOUR CHEMISTRY - THERMOCHEMISTRY QUESTIONS BELOW
+        ]
+      },
+      {
+        name: "Equilibrium",
+        icon: "⚖️",
+        questions: [
+          // ✏️ ADD YOUR CHEMISTRY - EQUILIBRIUM QUESTIONS BELOW
+        ]
+      },
+      {
+        name: "Organic Chemistry Basics",
+        icon: "🧬",
+        questions: [
+          // ✏️ ADD YOUR CHEMISTRY - ORGANIC CHEMISTRY QUESTIONS BELOW
+        ]
+      },
+      // ✏️ ADD A NEW CHEMISTRY CHAPTER BELOW THIS LINE (copy format above)
+    ]
+  },
+
+  // ──────────────────────────────────────────
+  //  ∑ MATHEMATICS — add chapters/questions here
+  // ──────────────────────────────────────────
+  math: {
+    color: 'math',
+    chapters: [
+      {
+        name: "Sets & Relations",
+        icon: "∩",
+        questions: [
+          // ✏️ ADD YOUR MATHS - SETS & RELATIONS QUESTIONS BELOW
+        ]
+      },
+      {
+        name: "Trigonometry",
+        icon: "📐",
+        questions: [
+          // ✏️ ADD YOUR MATHS - TRIGONOMETRY QUESTIONS BELOW
+        ]
+      },
+      {
+        name: "Quadratic Equations",
+        icon: "x²",
+        questions: [
+          // ✏️ ADD YOUR MATHS - QUADRATIC EQUATIONS QUESTIONS BELOW
+        ]
+      },
+      {
+        name: "Sequences & Series",
+        icon: "∑",
+        questions: [
+          // ✏️ ADD YOUR MATHS - SEQUENCES & SERIES QUESTIONS BELOW
+        ]
+      },
+      {
+        name: "Coordinate Geometry",
+        icon: "📊",
+        questions: [
+          // ✏️ ADD YOUR MATHS - COORDINATE GEOMETRY QUESTIONS BELOW
+        ]
+      },
+      {
+        name: "Permutation & Combination",
+        icon: "🔢",
+        questions: [
+          // ✏️ ADD YOUR MATHS - PERMUTATION & COMBINATION QUESTIONS BELOW
+        ]
+      },
+      // ✏️ ADD A NEW MATHS CHAPTER BELOW THIS LINE (copy format above)
+    ]
+  }
+
+};
+
+let currentSubject = 'phy';
+let currentChapter = null;
+
+function switchSubject(sub, btn) {
+  currentSubject = sub;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  goBack();
+  renderChapters();
+}
+
+function renderChapters() {
+  const grid = document.getElementById('chapter-grid');
+  const data = DATA[currentSubject];
+  grid.innerHTML = '';
+  data.chapters.forEach((ch, i) => {
+    const card = document.createElement('div');
+    card.className = `chapter-card ${data.color}-card`;
+    card.style.animationDelay = (i * 0.07) + 's';
+    card.innerHTML = `
+      <div class="ch-icon">${ch.icon}</div>
+      <div class="ch-name">${ch.name}</div>
+      <div class="ch-count">${ch.questions.length} questions</div>
+      <span class="ch-badge">${data.color.toUpperCase()}</span>
+    `;
+    card.onclick = () => openChapter(i);
+    grid.appendChild(card);
+  });
+}
+
+function openChapter(idx) {
+  currentChapter = idx;
+  const ch = DATA[currentSubject].chapters[idx];
+  const col = DATA[currentSubject].color;
+
+  document.getElementById('chapter-view').style.display = 'none';
+  const panel = document.getElementById('q-panel');
+  panel.classList.add('active');
+
+  const titleEl = document.getElementById('q-chapter-title');
+  titleEl.innerHTML = `<span style="background:linear-gradient(135deg,var(--${col}),var(--${col}2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">${ch.icon} ${ch.name}</span>`;
+
+  const list = document.getElementById('q-list');
+  list.innerHTML = '';
+
+  ch.questions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.style.animationDelay = (i * 0.08) + 's';
+    card.innerHTML = `
+      <div class="q-num">QUESTION ${String(i+1).padStart(2,'0')}</div>
+      <div class="q-text">${q.text}</div>
+      <div class="q-tags">
+        <span class="q-tag tag-${q.diff === 'hard' ? 'hard' : q.diff === 'med' ? 'med' : 'easy'}">${q.diff === 'hard' ? '🔴 Hard' : q.diff === 'med' ? '🟡 Medium' : '🟢 Easy'}</span>
+        ${q.tags.map(t => `<span class="q-tag ${t.includes('JEE') ? 'tag-jee' : 'tag-imp'}">${t}</span>`).join('')}
+      </div>
+      <div class="q-options" id="opts-${i}">
+        ${q.opts.map((o,j) => `<div class="option" onclick="selectOption(event,${i},${j},${q.ans})" id="opt-${i}-${j}">
+          <span class="opt-label">${['A','B','C','D'][j]}</span> ${o}
+        </div>`).join('')}
+      </div>
+    `;
+    card.querySelector('.q-text').onclick = (e) => {
+      e.stopPropagation();
+      const opts = document.getElementById(`opts-${i}`);
+      opts.classList.toggle('show');
+    };
+    list.appendChild(card);
+  });
+}
+
+function selectOption(e, qIdx, optIdx, correct) {
+  e.stopPropagation();
+  const ch = DATA[currentSubject].chapters[currentChapter];
+  const n = ch.questions[qIdx].opts.length;
+  for(let j=0; j<n; j++) {
+    const el = document.getElementById(`opt-${qIdx}-${j}`);
+    if(el) el.classList.remove('correct','wrong');
+  }
+  const chosen = document.getElementById(`opt-${qIdx}-${optIdx}`);
+  chosen.classList.add(optIdx === correct ? 'correct' : 'wrong');
+  if(optIdx !== correct) {
+    document.getElementById(`opt-${qIdx}-${correct}`).classList.add('correct');
+  }
+}
+
+function goBack() {
+  currentChapter = null;
+  document.getElementById('chapter-view').style.display = 'block';
+  document.getElementById('q-panel').classList.remove('active');
+  document.getElementById('q-list').innerHTML = '';
+}
+
+// ─── Dynamic counts ───
+function updateStats() {
+  let totalQ = 0, totalCh = 0;
+  Object.values(DATA).forEach(sub => {
+    totalCh += sub.chapters.length;
+    sub.chapters.forEach(ch => totalQ += ch.questions.length);
+  });
+  document.getElementById('totalQ').textContent = totalQ;
+  document.getElementById('totalChapters').textContent = totalCh;
+}
+
+// Init
+renderChapters();
+updateStats();
+</script>
+</body>
+</html>
